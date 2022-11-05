@@ -24,7 +24,7 @@ protected:
 	UFUNCTION(BlueprintCallable, Category = "PaperCharacter|Animation")
 		void Animate(float DeltaTime, FVector OldLocation, const FVector OldVelocity);
 
-		virtual void SetCurrentAnimationDirectory(const FVector& Velocity, TOptional<FMinimalViewInfo> ViewInfo);
+		virtual void SetCurrentAnimationDirection(const FVector& Velocity, TOptional<FMinimalViewInfo> ViewInfo);
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "PaperCharacter|Config")
 		uint8 bIsMoving : 1;
