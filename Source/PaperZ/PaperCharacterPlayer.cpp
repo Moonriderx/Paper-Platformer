@@ -73,22 +73,83 @@ void APaperCharacterPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInp
 
 void APaperCharacterPlayer::SetCurrentAnimationDirection(const FVector& Velocity, TOptional<FMinimalViewInfo> ViewInfo)
 {
+	const FVector Forward = GetActorForwardVector().GetSafeNormal();
+	const FVector Right = GetActorRightVector().GetSafeNormal();
+	const float ForwardSpeed = FMath::Floor(FVector::DotProduct(Velocity.GetSafeNormal(), Forward * 100) / 100);
+	const float RightSpeed = FMath::Floor(FVector::DotProduct(Velocity.GetSafeNormal(), Right * 100) / 100);
 
+	bIsMoving = ForwardSpeed != 0.0f || RightSpeed != 0.0f;
+
+	if (bIsMoving)
+	{
+		if (ForwardSpeed > 0.0f && abs(RightSpeed) < 0.25f)
+		{
+			CurrentAnimationDirection = AnimationDirection::Up;
+		}
+		else if (ForwardSpeed > 0.5f && RightSpeed >= 0.25f)
+		{
+			CurrentAnimationDirection = AnimationDirection::UpLeft;
+		}
+		else if (ForwardSpeed > 0.5f && RightSpeed <= -0.25f)
+		{
+			CurrentAnimationDirection = AnimationDirection::UpRight;
+		}
+		else if (ForwardSpeed < 0.5f && abs(RightSpeed <= 0.25f))
+		{
+			CurrentAnimationDirection = AnimationDirection::Down;
+		}
+		else if (ForwardSpeed < -0.5f && RightSpeed >= 0.25f)
+		{
+			CurrentAnimationDirection = AnimationDirection::DownLeft;
+		}
+		else if (ForwardSpeed < -0.5f && RightSpeed <= -0.25f)
+		{
+			CurrentAnimationDirection = AnimationDirection::DownRight;
+		}
+		else if (abs(ForwardSpeed) < 0.5f && RightSpeed > 0.0f)
+		{
+			CurrentAnimationDirection = AnimationDirection::Right;
+		}
+		else
+		{
+			CurrentAnimationDirection = AnimationDirection::Left;
+		}
+	}
 
 }
 
 void APaperCharacterPlayer::MoveForward(float Value)
 {
+
+	if (Value != 0.f)
+	{
+		const FVector Direction = Camera->GetForwardVector();
+		AddMovementInput(Direction, Value);
+	}
+
 }
 
 void APaperCharacterPlayer::MoveRight(float Value)
 {
+	if (Value != 0.f)
+	{
+		const FVector Direction = Camera->GetRightVector();
+		AddMovementInput(Direction, Value);
+	}
 }
 
 void APaperCharacterPlayer::LookUp(float Value)
 {
+	if (Value != 0.f)
+	{
+		AddControllerPitchInput(Value);
+	}
 }
 
 void APaperCharacterPlayer::Turn(float Value)
 {
+	if (Value != 0.f)
+	{
+		AddControllerYawInput(Value);
+	}
 }
