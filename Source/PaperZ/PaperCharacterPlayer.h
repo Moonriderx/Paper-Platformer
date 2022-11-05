@@ -6,6 +6,7 @@
 #include "MyPaperCharacter.h"
 #include "PaperCharacterPlayer.generated.h"
 
+
 class USpringArmComponent;
 class UCameraComponent;
 
