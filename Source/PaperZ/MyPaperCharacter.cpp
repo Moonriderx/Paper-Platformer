@@ -14,8 +14,9 @@ AMyPaperCharacter::AMyPaperCharacter()
 	bReplicates = true;
 
 	GetCapsuleComponent()->SetCapsuleRadius(70.f);
+	GetCapsuleComponent()->SetCapsuleHalfHeight(138.f);
 
-	GetSprite()->SetRelativeScale3D(FVector(11.f, 11.f, 11.f));
+	GetSprite()->SetRelativeScale3D(FVector(5.f, 5.f, 5.f));
 	GetSprite()->SetUsingAbsoluteRotation(true);
 	GetSprite()->SetFlipbook(FB.IdleDown);
 	GetSprite()->CastShadow = true;

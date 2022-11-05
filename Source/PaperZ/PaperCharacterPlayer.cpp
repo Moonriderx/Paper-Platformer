@@ -20,7 +20,8 @@ APaperCharacterPlayer::APaperCharacterPlayer()
 	CameraSpringArm->TargetArmLength = 1500.f;
 	CameraSpringArm->SetRelativeRotation(FRotator(-20.f, 0.f, 0.f));
 	CameraSpringArm->TargetOffset = FVector(0.f, 0.f, 200.f);
-	CameraSpringArm->bDoCollisionTest = false;
+	CameraSpringArm->bDoCollisionTest = true;
+	CameraSpringArm->bUsePawnControlRotation = true;
 	CameraSpringArm->bInheritPitch = true;
 	CameraSpringArm->bInheritYaw = true;
 	CameraSpringArm->bInheritRoll = false;
@@ -45,6 +46,7 @@ APaperCharacterPlayer::APaperCharacterPlayer()
 	Camera->PostProcessSettings.bOverride_DepthOfFieldMinFstop = true;
 	Camera->PostProcessSettings.DepthOfFieldMinFstop = 0.f;
 	Camera->PostProcessSettings.MotionBlurAmount = 0.f;
+
 	
 
 
