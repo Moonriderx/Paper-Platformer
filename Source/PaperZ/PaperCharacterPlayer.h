@@ -29,6 +29,7 @@ protected:
 
 	virtual void SetCurrentAnimationDirection(const FVector& Velocity, TOptional<FMinimalViewInfo> ViewInfo) override;
 
+
 	UFUNCTION()
 	void MoveForward(float Value);
 
@@ -40,6 +41,12 @@ protected:
 
 	UFUNCTION()
 	void Turn(float Value);
+
+	UFUNCTION()
+	void LimitCameraPitchMin();
+
+	UFUNCTION()
+	void LimitCameraPitchMax();
 
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"), Category = "PlayerCharacter|Components")

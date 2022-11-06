@@ -13,10 +13,10 @@ AMyPaperCharacter::AMyPaperCharacter()
 
 	bReplicates = true;
 
-	GetCapsuleComponent()->SetCapsuleRadius(70.f);
-	GetCapsuleComponent()->SetCapsuleHalfHeight(138.f);
+	GetCapsuleComponent()->SetCapsuleRadius(48.f);
+	GetCapsuleComponent()->SetCapsuleHalfHeight(98.f);
 
-	GetSprite()->SetRelativeScale3D(FVector(5.f, 5.f, 5.f));
+	GetSprite()->SetRelativeScale3D(FVector(3.5f, 3.5f, 3.5f));
 	GetSprite()->SetUsingAbsoluteRotation(true);
 	GetSprite()->SetFlipbook(FB.IdleDown);
 	GetSprite()->CastShadow = true;
@@ -125,12 +125,59 @@ void AMyPaperCharacter::Animate(float DeltaTime, FVector OldLocation, const FVec
 
 void AMyPaperCharacter::SetCurrentAnimationDirection(const FVector& Velocity, TOptional<FMinimalViewInfo> ViewInfo)
 {
+	FVector Forward;
+	FVector Right;
+	if (ViewInfo.IsSet())
+	{
+		Forward = UKismetMathLibrary::GetForwardVector(ViewInfo.GetValue().Rotation);
+		Right = UKismetMathLibrary::GetRightVector(ViewInfo.GetValue().Rotation);
+	}
+	else
+	{
+		Forward = GetActorForwardVector().GetSafeNormal();
+		Right = GetActorRightVector().GetSafeNormal();
+	}
 
-	if (!ViewInfo.IsSet()) return;
-	const FVector Forward = UKismetMathLibrary::GetForwardVector(ViewInfo.GetValue().Rotation); 
-	const FVector Right = UKismetMathLibrary::GetRightVector(ViewInfo.GetValue().Rotation);
 	const float ForwardSpeed = FMath::Floor(FVector::DotProduct(Velocity.GetSafeNormal(), Forward) * 100) / 100;
 	const float RightSpeed = FMath::Floor(FVector::DotProduct(Velocity.GetSafeNormal(), Right) * 100) / 100;
 
+
+	bIsMoving = ForwardSpeed != 0.0f || RightSpeed != 0.0f;
+
+	if (bIsMoving)
+	{
+		if (ForwardSpeed > 0.0f && abs(RightSpeed) < 0.5f)
+		{
+			CurrentAnimationDirection = AnimationDirection::Up;
+		}
+		else if (ForwardSpeed > 0.5f && RightSpeed >= 0.5f)
+		{
+			CurrentAnimationDirection = AnimationDirection::UpRight;
+		}
+		else if (ForwardSpeed > 0.5f && RightSpeed <= -0.5f)
+		{
+			CurrentAnimationDirection = AnimationDirection::UpLeft;
+		}
+		else if (ForwardSpeed < 0.5f && abs(RightSpeed) <= 0.5f)
+		{
+			CurrentAnimationDirection = AnimationDirection::Down;
+		}
+		else if (ForwardSpeed < -0.5f && RightSpeed >= 0.5f)
+		{
+			CurrentAnimationDirection = AnimationDirection::DownRight;
+		}
+		else if (ForwardSpeed < -0.5f && RightSpeed <= -0.5f)
+		{
+			CurrentAnimationDirection = AnimationDirection::DownLeft;
+		}
+		else if (abs(ForwardSpeed) < 0.5f && RightSpeed > 0.0f)
+		{
+			CurrentAnimationDirection = AnimationDirection::Right;
+		}
+		else
+		{
+			CurrentAnimationDirection = AnimationDirection::Left;
+		}
+	}
 }
 

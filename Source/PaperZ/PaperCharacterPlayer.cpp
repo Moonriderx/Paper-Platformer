@@ -6,12 +6,14 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 APaperCharacterPlayer::APaperCharacterPlayer()
 {
 	GetCharacterMovement()->bUseControllerDesiredRotation = true;
 	GetCharacterMovement()->bOrientRotationToMovement = false;
 	bUseControllerRotationYaw = false;
+	
 
 	/** Spring Arm*/
 
@@ -46,6 +48,7 @@ APaperCharacterPlayer::APaperCharacterPlayer()
 	Camera->PostProcessSettings.bOverride_DepthOfFieldMinFstop = true;
 	Camera->PostProcessSettings.DepthOfFieldMinFstop = 0.f;
 	Camera->PostProcessSettings.MotionBlurAmount = 0.f;
+	
 
 	
 
@@ -55,8 +58,11 @@ APaperCharacterPlayer::APaperCharacterPlayer()
 void APaperCharacterPlayer::BeginPlay()
 {
 	Super::BeginPlay();
-}
+	LimitCameraPitchMin();
+	LimitCameraPitchMax();
+	
 
+}
 void APaperCharacterPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
@@ -75,54 +81,13 @@ void APaperCharacterPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInp
 
 void APaperCharacterPlayer::SetCurrentAnimationDirection(const FVector& Velocity, TOptional<FMinimalViewInfo> ViewInfo)
 {
-	const FVector Forward = GetActorForwardVector().GetSafeNormal();
-	const FVector Right = GetActorRightVector().GetSafeNormal();
-	const float ForwardSpeed = FMath::Floor(FVector::DotProduct(Velocity.GetSafeNormal(), Forward * 100) / 100);
-	const float RightSpeed = FMath::Floor(FVector::DotProduct(Velocity.GetSafeNormal(), Right * 100) / 100);
-
-	bIsMoving = ForwardSpeed != 0.0f || RightSpeed != 0.0f;
-
-	if (bIsMoving)
-	{
-		if (ForwardSpeed > 0.0f && abs(RightSpeed) < 0.25f)
-		{
-			CurrentAnimationDirection = AnimationDirection::Up;
-		}
-		else if (ForwardSpeed > 0.5f && RightSpeed >= 0.25f)
-		{
-			CurrentAnimationDirection = AnimationDirection::UpLeft;
-		}
-		else if (ForwardSpeed > 0.5f && RightSpeed <= -0.25f)
-		{
-			CurrentAnimationDirection = AnimationDirection::UpRight;
-		}
-		else if (ForwardSpeed < 0.5f && abs(RightSpeed <= 0.25f))
-		{
-			CurrentAnimationDirection = AnimationDirection::Down;
-		}
-		else if (ForwardSpeed < -0.5f && RightSpeed >= 0.25f)
-		{
-			CurrentAnimationDirection = AnimationDirection::DownLeft;
-		}
-		else if (ForwardSpeed < -0.5f && RightSpeed <= -0.25f)
-		{
-			CurrentAnimationDirection = AnimationDirection::DownRight;
-		}
-		else if (abs(ForwardSpeed) < 0.5f && RightSpeed > 0.0f)
-		{
-			CurrentAnimationDirection = AnimationDirection::Right;
-		}
-		else
-		{
-			CurrentAnimationDirection = AnimationDirection::Left;
-		}
-	}
-
+	Super::SetCurrentAnimationDirection(Velocity, ViewInfo);
 }
+
 
 void APaperCharacterPlayer::MoveForward(float Value)
 {
-
+	
 	if (Value != 0.f)
 	{
 		const FVector Direction = Camera->GetForwardVector();
@@ -148,10 +113,34 @@ void APaperCharacterPlayer::LookUp(float Value)
 	}
 }
 
+
 void APaperCharacterPlayer::Turn(float Value)
 {
 	if (Value != 0.f)
 	{
 		AddControllerYawInput(Value);
+	}
+}
+
+void APaperCharacterPlayer::LimitCameraPitchMin()
+{
+	if (GetWorld()) {
+		APlayerController* PlayerController = Cast<APlayerController>(Controller);
+		if (PlayerController)
+		{
+			PlayerController->PlayerCameraManager->ViewPitchMin = -50.f;
+		}
+	}
+
+}
+
+void APaperCharacterPlayer::LimitCameraPitchMax()
+{
+	if (GetWorld()) {
+		APlayerController* PlayerController = Cast<APlayerController>(Controller);
+		if (PlayerController)
+		{
+			PlayerController->PlayerCameraManager->ViewPitchMax = 50.f;
+		}
 	}
 }
