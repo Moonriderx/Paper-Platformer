@@ -12,6 +12,7 @@ APaperCharacterPlayer::APaperCharacterPlayer()
 {
 	GetCharacterMovement()->bUseControllerDesiredRotation = true;
 	GetCharacterMovement()->bOrientRotationToMovement = false;
+	GetCharacterMovement()->AirControl = 0.25f;
 	bUseControllerRotationYaw = false;
 	
 
