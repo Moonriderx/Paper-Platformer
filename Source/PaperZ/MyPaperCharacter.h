@@ -8,7 +8,7 @@
 #include "MyPaperCharacter.generated.h"
 
 /**
- * 
+This is the base character we are building from
  */
 UCLASS()
 class PAPERZ_API AMyPaperCharacter : public APaperCharacter
@@ -20,6 +20,14 @@ public:
 
 protected:
 		virtual void BeginPlay() override;
+		virtual void OnJumped_Implementation() override;
+		virtual void Landed(const FHitResult& Hit) override;
+		virtual void NotifyJumpApex() override;
+
+		// Movement Functions
+
+		void ModifyJumpPower();
+		void ResetJumpPower();
 
 	UFUNCTION(BlueprintCallable, Category = "PaperCharacter|Animation")
 		void Animate(float DeltaTime, FVector OldLocation, const FVector OldVelocity);
@@ -34,6 +42,9 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PaperCharacter|Config")
 		Flipbooks FB;
+
+	FTimerHandle JumpReset;
+	int JumpCounter{};
 
 	
 };

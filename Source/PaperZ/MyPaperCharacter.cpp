@@ -5,11 +5,15 @@
 #include "PaperFlipbookComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "GameFramework/CharacterMovementComponent.h"
 
 
 AMyPaperCharacter::AMyPaperCharacter()
 {
 	OnCharacterMovementUpdated.AddDynamic(this, &AMyPaperCharacter::Animate);
+
+	GetCharacterMovement()->GravityScale = 2.8f;
+	GetCharacterMovement()->JumpZVelocity = 1000.f;
 
 	bReplicates = true;
 
@@ -27,6 +31,72 @@ void AMyPaperCharacter::BeginPlay()
 	Super::BeginPlay();
 
 	SetReplicateMovement(true);
+}
+
+void AMyPaperCharacter::OnJumped_Implementation()
+{
+	GetCharacterMovement()->bNotifyApex = true; // resets every single jump
+
+	GetSprite()->SetPlayRate(0.f); // freezes the flipbooks, no running in place
+	GetSprite()->SetPlaybackPositionInFrames(0, true);
+
+	JumpCounter++;
+	GetWorldTimerManager().ClearTimer(JumpReset);
+
+	Super::OnJumped_Implementation();
+
+}
+
+void AMyPaperCharacter::Landed(const FHitResult& Hit)
+{
+
+	GetSprite()->SetPlayRate(1.f);
+	GetCharacterMovement()->GravityScale = 2.8f;
+
+	if (JumpCounter > 2)
+	{
+		ResetJumpPower();
+	}
+
+	ModifyJumpPower();
+	GetWorldTimerManager().SetTimer(JumpReset, this, &AMyPaperCharacter::ResetJumpPower, 0.2f, false); // set a timer if .2 seconds passed, you missed the jump
+
+}
+
+void AMyPaperCharacter::NotifyJumpApex()
+{
+
+	GetCharacterMovement()->GravityScale = 5.f;
+
+	Super::NotifyJumpApex();
+}
+
+void AMyPaperCharacter::ModifyJumpPower()
+{
+
+	switch (JumpCounter)
+	{
+	case 1:
+		GetCharacterMovement()->JumpZVelocity = 1400.f;
+		UE_LOG(LogTemp, Warning, TEXT("Jump Power Level 1"));
+		break;
+	case 2:
+		GetCharacterMovement()->JumpZVelocity = 2000.f;
+		UE_LOG(LogTemp, Warning, TEXT("Jump Power Level 2"));
+		break;
+	default:
+		UE_LOG(LogTemp, Warning, TEXT("Jump Power Level 0"));
+		break;
+	}
+
+}
+
+void AMyPaperCharacter::ResetJumpPower()
+{
+
+	JumpCounter = 0;
+	GetCharacterMovement()->JumpZVelocity = 1000.f;
+	UE_LOG(LogTemp, Warning, TEXT("Jump Power Reset"));
 }
 
 void AMyPaperCharacter::Animate(float DeltaTime, FVector OldLocation, const FVector OldVelocity)
