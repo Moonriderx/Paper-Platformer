@@ -50,14 +50,34 @@ void UMovableStaticMeshComponent::Move(bool bTriggered)
 	{
 		MoveTimeline.Reverse();
 	}
+
+	bIsMoving = true;
 }
 
 void UMovableStaticMeshComponent::OnMove()
 {
+	const float PlaybackPosition = MoveTimeline.GetPlaybackPosition(); // defines where are we
+	float CurveValue = MoveCurve->GetFloatValue(PlaybackPosition); // grab its position and get the float value from that curve
+
+	// handle reverse state
+	if (bIsReversed)
+	{
+		CurveValue = -CurveValue;
+	}
+
+	if (MovementType == EMovementType::Location)
+	{
+		UpdateLocation(CurveValue);
+	}
+	else if (MovementType == EMovementType::Rotation)
+	{
+		UpdateRotation(CurveValue);
+	}
 }
 
 void UMovableStaticMeshComponent::OnMoveFinished()
 {
+	bIsMoving = false;
 }
 
 void UMovableStaticMeshComponent::UpdateRotation(float CurveValue)
