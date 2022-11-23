@@ -82,6 +82,16 @@ void UMovableStaticMeshComponent::OnMoveFinished()
 
 void UMovableStaticMeshComponent::UpdateRotation(float CurveValue)
 {
+	FRotator NewRotation = GetRelativeRotation(); // grab our rotation relative to whatever parent that static meshes is attached to
+	switch (RotateAxis)
+	{
+	case ERotationAxis::Pitch:
+		break;
+	case ERotationAxis::Roll:
+		break;
+	case ERotationAxis::Yaw:
+		break;
+	}
 }
 
 void UMovableStaticMeshComponent::UpdateLocation(float CurveValue)

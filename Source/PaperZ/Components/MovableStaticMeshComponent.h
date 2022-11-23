@@ -10,7 +10,7 @@
 UENUM(BlueprintType)
 enum class ERotationAxis : uint8
 {
-	Yaw, Pitch, Raw
+	Yaw, Pitch, Roll
 };
 
 UENUM(BlueprintType)
