@@ -86,14 +86,42 @@ void UMovableStaticMeshComponent::UpdateRotation(float CurveValue)
 	switch (RotateAxis)
 	{
 	case ERotationAxis::Pitch:
+		NewRotation = FRotator(CurveValue, 0.f, 0.f);
 		break;
 	case ERotationAxis::Roll:
+		NewRotation = FRotator(0.f, 0.f, CurveValue);
 		break;
 	case ERotationAxis::Yaw:
+		NewRotation = FRotator(0.f, CurveValue, 0.f);
+		break;
+	default:
 		break;
 	}
+
+	SetRelativeRotation(NewRotation);
 }
 
 void UMovableStaticMeshComponent::UpdateLocation(float CurveValue)
 {
+
+	FVector NewLocation = GetRelativeLocation();
+	switch (LocationAxis)
+	{
+	case ELocationAxis::X:
+		NewLocation.X += CurveValue - PreviousTimelineValue;
+		break;
+	case ELocationAxis::Y:
+		NewLocation.Y += CurveValue - PreviousTimelineValue;
+		break;
+	case ELocationAxis::Z:
+		NewLocation.Z += CurveValue - PreviousTimelineValue;
+		break;
+	default:
+		break;
+	}
+
+	PreviousTimelineValue = CurveValue;
+
+	SetRelativeLocation(NewLocation);
+
 }
