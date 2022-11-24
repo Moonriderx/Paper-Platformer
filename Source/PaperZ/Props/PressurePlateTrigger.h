@@ -54,6 +54,7 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Trigger")
 	TArray<FName> TargetTags; // references of tags of actors that we want this pressureplate to affect in the world
 
-
+private:
+	bool bIsTriggered;
 
 };
