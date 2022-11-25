@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "Components/SphereComponent.h"
+#include "Components/BoxComponent.h"
 #include "PaperZ/Components/MovableStaticMeshComponent.h"
 #include "PressurePlateTrigger.generated.h"
 
@@ -42,8 +43,11 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"), Category = "Trigger")
 	UMovableStaticMeshComponent* MovableMesh;
 
+	//UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"), Category = "Trigger")
+	//USphereComponent* OverlapComponent;
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"), Category = "Trigger")
-	USphereComponent* OverlapComponent;
+	UBoxComponent* OverlapComponent;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Trigger")
 	bool bIsDisabled; // control the state of the pressurePlate

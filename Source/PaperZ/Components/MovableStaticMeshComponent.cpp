@@ -44,7 +44,14 @@ void UMovableStaticMeshComponent::Move(bool bTriggered)
 
 	if (bTriggered)
 	{
-		MoveTimeline.PlayFromStart();
+		if (MoveTimeline.IsReversing())
+		{
+			MoveTimeline.Play();
+		}
+		else
+		{
+			MoveTimeline.PlayFromStart();
+		}
 	}
 	else
 	{
@@ -65,14 +72,18 @@ void UMovableStaticMeshComponent::OnMove()
 		CurveValue = -CurveValue;
 	}
 
+	const float AdjustedValue = CurveValue - PreviousTimelineValue;
+
 	if (MovementType == EMovementType::Location)
 	{
-		UpdateLocation(CurveValue);
+		UpdateLocation(AdjustedValue);
 	}
 	else if (MovementType == EMovementType::Rotation)
 	{
-		UpdateRotation(CurveValue);
+		UpdateRotation(AdjustedValue);
 	}
+
+	PreviousTimelineValue = CurveValue;
 }
 
 void UMovableStaticMeshComponent::OnMoveFinished()
@@ -86,13 +97,13 @@ void UMovableStaticMeshComponent::UpdateRotation(float CurveValue)
 	switch (RotateAxis)
 	{
 	case ERotationAxis::Pitch:
-		NewRotation = FRotator(CurveValue, 0.f, 0.f);
+		NewRotation.Pitch += CurveValue;
 		break;
 	case ERotationAxis::Roll:
-		NewRotation = FRotator(0.f, 0.f, CurveValue);
+		NewRotation.Roll += CurveValue;
 		break;
 	case ERotationAxis::Yaw:
-		NewRotation = FRotator(0.f, CurveValue, 0.f);
+		NewRotation.Yaw += CurveValue;
 		break;
 	default:
 		break;
@@ -108,19 +119,19 @@ void UMovableStaticMeshComponent::UpdateLocation(float CurveValue)
 	switch (LocationAxis)
 	{
 	case ELocationAxis::X:
-		NewLocation.X += CurveValue - PreviousTimelineValue;
+		NewLocation.X += CurveValue;
 		break;
 	case ELocationAxis::Y:
-		NewLocation.Y += CurveValue - PreviousTimelineValue;
+		NewLocation.Y += CurveValue;
 		break;
 	case ELocationAxis::Z:
-		NewLocation.Z += CurveValue - PreviousTimelineValue;
+		NewLocation.Z += CurveValue;
 		break;
 	default:
 		break;
 	}
 
-	PreviousTimelineValue = CurveValue;
+
 
 	SetRelativeLocation(NewLocation);
 

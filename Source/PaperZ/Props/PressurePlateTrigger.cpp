@@ -18,7 +18,10 @@ APressurePlateTrigger::APressurePlateTrigger()
 	MovableMesh = CreateDefaultSubobject<UMovableStaticMeshComponent>(TEXT("Movable Mesh"));
 	MovableMesh->SetupAttachment(BaseMesh);
 
-	OverlapComponent = CreateDefaultSubobject<USphereComponent>(TEXT("Overlap Area"));
+	//OverlapComponent = CreateDefaultSubobject<USphereComponent>(TEXT("Overlap Area"));
+	//OverlapComponent->SetupAttachment(MovableMesh);
+
+	OverlapComponent = CreateDefaultSubobject<UBoxComponent>(TEXT("Overlap Area"));
 	OverlapComponent->SetupAttachment(MovableMesh);
 
 }
